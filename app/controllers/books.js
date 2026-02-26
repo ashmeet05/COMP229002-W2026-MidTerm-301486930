@@ -63,35 +63,26 @@ module.exports.getAll = async function (req, res, next) {
 
 module.exports.update = async function (req, res, next) {
   try {
-    // Get input from the request
-   let updatedBook = new BookModel(req.body);
-updatedBook._id = req.params.id;
-
-
-
-    // Submit the change
-    let result = await BookModel.updateOne({ _id: req.params.id }, updatedBook); 
+    let result = await BookModel.updateOne(
+      { _id: req.params.id }, 
+      { $set: req.body }
+    );
     console.log("Result: ", result);
 
-    // Handle the result: send a response.
     if (result.modifiedCount > 0) {
       res.status(200);
-      res.json(
-        {
-          success: true,
-          message: "Book updated successfully."
-        }
-      );
+      res.json({
+        success: true,
+        message: "Book updated successfully."
+      });
     } else {
       throw new Error('Book not updated. Are you sure it exists?')
     }
-
   } catch (error) {
     console.log(error);
     next(error);
   }
 }
-
 
 module.exports.remove = async function (req, res, next) {
   try {

@@ -43,9 +43,19 @@ module.exports.getByID = async function (req, res, next) {
 
 module.exports.processAdd = async (req, res, next) => {
     try {
- 
+
         // Builds a new user from the values of the body of the request.
-        // Add your code here to create a new user object using the UsersModel and the data from req.body
+        let newUser = new UsersModel(req.body);
+
+        // Save the new user to the DB
+        let result = await newUser.save();
+        console.log("====> Result: ", result);
+
+        res.status(200).json({
+            success: true,
+            message: "User created successfully.",
+            data: result
+        });
 
     } catch (error) {
         console.log(error);
