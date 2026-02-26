@@ -2,17 +2,26 @@ let UsersModel = require('../models/users');
 
 module.exports.usersList = async function (req, res, next) {
 
+  
     try {
-        // Retrieves a list of users from the DB and waits for the result.
-        // Add your code here to retrieve the list of users from the database using the UsersModel.        
+        let list = await UsersModel.find();
 
-        // If the list is empty, throw an error. Otherwise, return the list as a JSON response.
+        if (!list || list.length === 0) {
+            throw new Error('No users found.');
+        }
+
+        res.json({
+            success: true,
+            message: "Users list retrieved successfully.",
+            data: list
+        });
     } catch (error) {
         console.log(error);
         next(error);
     }
-
 }
+
+
 
 module.exports.getByID = async function (req, res, next) {
     try {
