@@ -12,7 +12,7 @@ let usersRouter = require('../app/routers/users');
 app.use(cors());
 
 app.use(logger('dev'));
-app.use(express.json());
+app.use(express.json({ limit: '100kb' }));
 app.use(express.urlencoded({ extended: false }));
 
 app.use('/', indexRouter);
@@ -27,11 +27,13 @@ app.use(function (req, res, next) {
 // error handler
 app.use(function (err, req, res, next) {
     // render the error json
-    res.status(err.status || 500);
+    // Don't leak internal error details for unexpected server errors.
+    const status = err.status || (err.name === 'CastError' || err.name === 'ValidationError' ? 400 : 500);
+    res.status(status);
     res.json(
         {
             success: false,
-            message: err.message
+            message: status >= 500 ? 'Something went wrong on the server.' : err.message
         }
     );
 });
